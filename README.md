@@ -51,4 +51,4 @@ heap_by_quckly_sort(heap, 0, heap->tail - 1);
 ### 核心逻辑
 
 > 每走一步前，周围四个位置转化为HeapNode入堆（要将当前步数设置进HeapNode，因为假如从起始点，走到周围四个坐标的任意一个都是第一步，也就是周围四个的HeapNode的step都要设为1，指的是从原点到此位置最少要多少步），然后找到heap数组里面所有的HeapNode，找到f = g + h最小的那个值，因为此HeapNode是最接近终点坐标的位置，然后再把这个位置的坐标和整个HeapNode放入递归函数，去找它周围的其他四个位置并且做同样的处理（注意：在递归之前要将这个最小的f（h）值HeapNode在heap中去除，因为如果走了这一步，发现再下一步比上上一步的第二小的坐标f值要大，那么就说明这一条路是错的，需要从heap里面找到此时f的最小值【也就是上上一步的第二小的值的坐标】比如：【此图可以查看文件aStar.c最末尾的注释！！！】），之后直至找到终点。
-打印时，最短路径的HeapNode并不在heap里面因为都被删除了，那么需要提前去设置终点的parent_node 拿到终点的HeapNode，然后再去拿到父节点curr_node = curr_node->parent;直到最后到达起点位置。此时寻路完毕！！（【记得把以及入过heap的位置bol标记为1（true）！！！】）
+打印时，最短路径的HeapNode并不在heap里面因为都被删除了，那么需要提前去设置终点的parent_node 拿到终点的HeapNode，然后再去拿到父节点curr_node = curr_node->parent;直到最后到达起点位置。此时寻路完毕！！（【记得把已经入过heap的位置bol标记为1（true）这样防止找过的位置重复走！！！】）
