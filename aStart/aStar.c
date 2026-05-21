@@ -44,14 +44,14 @@ void heap_by_quckly_sort(HeapNodeArr *h, i32 left, i32 right) {
 HeapNode *create_HeapNode(HeapNode *parent , i32 y, i32 x, i32 f, i32 step,
         i32 manhattan, i32 parent_y, i32 parent_x) {
     HeapNode *h = (HeapNode *) malloc(sizeof(HeapNode));
-    h->y = y;
-    h->x = x;
-    h->f = f;
-    h->step = step;
-    h->manhattan = manhattan;
-    h->parent = parent;
-    h->parent_y = parent_y;
-    h->parent_x = parent_x;
+    h->y          =  y;
+    h->x          =  x;
+    h->f          =  f;
+    h->step       =  step;
+    h->manhattan  =  manhattan;
+    h->parent     =  parent;
+    h->parent_y   =  parent_y;
+    h->parent_x   =  parent_x;
     return h;
 }
 
@@ -67,7 +67,7 @@ void enheapNodeArr(HeapNodeArr *heapNodeArr, HeapNode *heapNode) {
 }
 
 void aStar_method
-(i32 map[HEIGHT][WIDTH],HeapNode *parent_node ,HeapNodeArr *heap, i32 curr_step,
+(char map[HEIGHT][WIDTH],HeapNode *parent_node ,HeapNodeArr *heap, i32 curr_step,
         i32 *bol, i32 start_y,i32 start_x, i32 t_y, i32 t_x) {
     i32 n_y[] = {-1, 1, 0, 0};
     i32 n_x[] = {0, 0, -1, 1};
@@ -82,7 +82,7 @@ void aStar_method
         i32 new_y = start_y + n_y[i];
         i32 new_x = start_x + n_x[i];
         if (new_y < HEIGHT && new_y >= 0 && new_x < WIDTH && new_x >= 0 &&
-            map[new_y][new_x] != 1 && bol[new_y * WIDTH + new_x] == 0) {
+            map[new_y][new_x] != 'X' && bol[new_y * WIDTH + new_x] == 0) {
             bol[new_y * WIDTH + new_x] = 1;
             i32 manhattanFormulaExe = manhattan_formula_exe(new_x, new_y, t_x, t_y);
             i32 f = enter_heap_formula(curr_step, manhattanFormulaExe);
@@ -101,31 +101,42 @@ void aStar_method
         min_heap_node->y, min_heap_node->x, t_y, t_x);
 }
 
-void print_map_path(i32 map[HEIGHT][WIDTH],HeapNode *end_node) {
+static i32 state = 0;
+void print_map_path(char map[HEIGHT][WIDTH],HeapNode *end_node) {
     printf("enter the function print_map_path!!\n");
     HeapNode *curr_node = end_node;
-    while (curr_node->step > 1){
-        map[curr_node->y][curr_node->x] = 5;
-        printf("curr_node : [%d][%d]\n" , curr_node->y , curr_node->x);
+    map[end_node->y][end_node->x] = 'P';
+    while (curr_node->step >= 1) {
+        if (state == 0)
+            state = 1;
+        else {
+            map[curr_node->y][curr_node->x] = '*';
+            printf("curr_node : [%d][%d]\n", curr_node->y, curr_node->x);
+        }
         curr_node = curr_node->parent;
     }
     print_map(map);
 }
 
-void aStar_main(i32 map[HEIGHT][WIDTH], i32 start_y, i32 start_x, i32 t_y, i32 t_x) {
+void aStar_main(char map[HEIGHT][WIDTH], i32 start_y, i32 start_x, i32 t_y, i32 t_x) {
+    map[start_y][start_x] = 'W';
     HeapNodeArr *heap = create_HeapNodeArr();
     i32 *bol = (i32 *) calloc(HEIGHT * WIDTH, sizeof(i32));
-    aStar_method(map,NULL, heap, 0, bol, start_y, start_x, t_y, t_x);
+    printf("enter!\n");
+    HeapNode *star_node = create_HeapNode(NULL , start_y, start_x, 0, 0
+            , 0, start_y, start_x);
+    aStar_method(map,star_node, heap, 0, bol, start_y, start_x, t_y, t_x);
 }
 
-void print_map(i32 map[HEIGHT][WIDTH]) {
+void print_map(char map[HEIGHT][WIDTH]) {
+    printf("\n");
     for (int i = 0; i < HEIGHT; ++i) {
         printf("[");
         for (int j = 0; j < WIDTH; ++j) {
             if (j == WIDTH - 1) {
-                printf("%d", map[i][j]);
+                printf("%c", map[i][j]);
             } else {
-                printf("%d,", map[i][j]);
+                printf("%c,", map[i][j]);
             }
         }
         printf("]\n");
