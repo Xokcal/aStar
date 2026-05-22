@@ -34,4 +34,10 @@ void print_map_path(char map[HEIGHT][WIDTH],HeapNode *end_node);
 
 void print_map(char map[HEIGHT][WIDTH]);
 
+void heap_swrap(HeapNodeArr *heap , i32 a , i32 b);
+
+void heap_push(HeapNodeArr *heap , HeapNode *new);
+
+HeapNode *heap_pop(HeapNodeArr *heap);
+
 #endif //ASTAR_ASTAR_H

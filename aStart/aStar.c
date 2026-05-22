@@ -41,6 +41,50 @@ void heap_by_quckly_sort(HeapNodeArr *h, i32 left, i32 right) {
     heap_by_quckly_sort(h, left, r);
 }
 
+//最小堆
+void heap_swrap(HeapNodeArr *heap , i32 a , i32 b){
+    HeapNode *t = heap->arr[a];
+    heap->arr[a] = heap->arr[b];
+    heap->arr[b] = t;
+}
+
+void heap_push(HeapNodeArr *heap , HeapNode *new){
+    heap->arr[heap->tail] = new;
+    i32 i = heap->tail++;
+
+    while (i > 0){
+        i32 parent = (i - 1) / 2;
+        if (heap->arr[parent]->f > heap->arr[i]->f){
+            heap_swrap(heap , i , parent);
+            i = parent;
+        } else
+            break;
+    }
+}
+
+HeapNode *heap_pop(HeapNodeArr *heap){
+    if (heap->tail == 0)return NULL;
+    HeapNode *r = heap->arr[0];
+    heap->arr[0] = heap->arr[--heap->tail];
+    i32 i = 0;
+    while (1){
+        i32 min = i;
+        i32 min_v = heap->arr[min]->f;
+        i32 left = (i * 2) + 1;
+        i32 right = (i * 2) + 2;
+        if (left < heap->tail && heap->arr[left]->f < min_v)
+            min = left;
+        if (right < heap->tail && heap->arr[right]->f < min_v)
+            min = right;
+        if (min != i){
+            heap_swrap(heap , i , min);
+            i = min;
+        } else
+            break;
+    }
+    return r;
+}
+
 HeapNode *create_HeapNode(HeapNode *parent , i32 y, i32 x, i32 f, i32 step,
         i32 manhattan, i32 parent_y, i32 parent_x) {
     HeapNode *h = (HeapNode *) malloc(sizeof(HeapNode));
@@ -88,15 +132,15 @@ void aStar_method
             i32 f = enter_heap_formula(curr_step, manhattanFormulaExe);
             HeapNode *heapNode = create_HeapNode(parent_node , new_y, new_x, f, curr_step + 1
                 , manhattanFormulaExe, start_y, start_x);
-            enheapNodeArr(heap, heapNode);
+            heap_push(heap, heapNode);
         }
     }
     if (heap->tail == 0)return;
-    heap_by_quckly_sort(heap, 0, heap->tail - 1);
-    HeapNode *min_heap_node = heap->arr[0];
+//    heap_by_quckly_sort(heap, 0, heap->tail - 1);
+    HeapNode *min_heap_node = heap_pop(heap);
     //删除数组最小值
-    heap->arr[0] = heap->arr[heap->tail - 1];
-    heap->tail--;
+//    heap->arr[0] = heap->arr[heap->tail - 1];
+//    heap->tail--;
     aStar_method(map, min_heap_node, heap , min_heap_node->step, bol,
         min_heap_node->y, min_heap_node->x, t_y, t_x);
 }
@@ -123,8 +167,8 @@ void aStar_main(char map[HEIGHT][WIDTH], i32 start_y, i32 start_x, i32 t_y, i32 
     HeapNodeArr *heap = create_HeapNodeArr();
     i32 *bol = (i32 *) calloc(HEIGHT * WIDTH, sizeof(i32));
     printf("enter!\n");
-    HeapNode *star_node = create_HeapNode(NULL , start_y, start_x, 0, 0
-            , 0, start_y, start_x);
+    HeapNode *star_node = create_HeapNode(NULL , start_y, start_x,
+        0, 0, 0, start_y, start_x);
     aStar_method(map,star_node, heap, 0, bol, start_y, start_x, t_y, t_x);
 }
 
